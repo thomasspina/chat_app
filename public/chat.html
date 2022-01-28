@@ -32,11 +32,20 @@
     </main>
 
     <div class="chat-message-form">
-
+      <form id="chat-form">
+        <input 
+          id="msg"
+          required 
+          autocomplete="off" 
+          type="text" 
+          placeholder="enter message" 
+        />
+        <button type="submit">Send</button>
+      </form>
     </div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-
+  <script src="js/main.js"></script>
 </body>
 </html>
