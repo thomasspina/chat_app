@@ -1,10 +1,14 @@
 const chatForm = document.getElementById('chat-form');
+const chatMessageBoard = document.querySelector('.chat-message-board')
 
 const socket = io();
 
 // Message from server
 socket.on('message', message => {
     outputMessage(message);
+
+    // Scroll down
+    chatMessageBoard.scrollTop = chatMessageBoard.scrollHeight;
 });
 
 // Message submit 
@@ -22,10 +26,13 @@ function outputMessage(message) {
     div.classList.add('message');
     
     div.innerHTML = `
-    <p>username <span>timestamp</span></p>
-    <p class="text">
-        ${message}
-    </p>`;
+    <div class="message">
+        <p>username <span>timestamp</span></p>
+        <p class="text">
+            ${message}
+        </p>
+    </div>
+    `;
 
     document.querySelector('.chat-message-board').appendChild(div);
 }

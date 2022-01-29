@@ -1,1 +1,7 @@
 
+/* chat page */
+
+.chat-message-board {
+	max-height: 200px;
+	overflow-y: scroll;
+}

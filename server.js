@@ -19,7 +19,7 @@ io.on('connection', socket => {
 
     // Broadcast when a user connects
     socket.on('disconnect', () => {
-        io.emit('message', 'A user has left the chat');
+        io.emit('message', 'A user has left the chat'); // Emits to everything
     });
 
     // Listen for chatMessage
