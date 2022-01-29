@@ -19,6 +19,10 @@ chatForm.addEventListener('submit', (event) => {
 
     // Emitting a message to the server
     socket.emit('chatMessage', msg);
+
+    // Clear input
+    event.target.elements.msg.value = "";
+    event.target.elements.msg.focus();
 });
 
 function outputMessage(message) {
@@ -27,9 +31,9 @@ function outputMessage(message) {
     
     div.innerHTML = `
     <div class="message">
-        <p>username <span>timestamp</span></p>
+        <p class="meta">${message.username} <span>${message.time}</span> <span class="date">${message.date}</span></p>
         <p class="text">
-            ${message}
+            ${message.text}
         </p>
     </div>
     `;
