@@ -2,14 +2,19 @@
 /* chat page */
 
 .chat-message-board {
-	max-height: 200px;
+	max-height: 500px;
 	overflow-y: scroll;
+}
+
+.chat-message-board .message {
+	padding: 10px;
 }
 
 .chat-message-board .message .meta {
 	font-size: 15px;
+	margin-bottom: 7px;
 }
 
 .chat-message-board .message .meta .date {
-	font-size: 10px;
+	font-size: 13px;
 }
