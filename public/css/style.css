@@ -1,18 +1,88 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+}
+
+/* home page */
+
+.home-page {
+	width: 100%;
+}
+
+.home-header {
+	display: flex;
+	justify-content: center;
+}
+
+.form-container {
+	width: 100%;
+	height: 10vh;
+	display: flex;
+	justify-content: center;
+}
+
+.login {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
 
 /* chat page */
 
+.chat-header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.chat-board {
+	display: flex;
+	justify-content: space-between;
+	margin: 0 10px;
+}
+
+.room {
+	display: flex;
+	flex-direction: column;
+}
+
+.room h2 {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.room a {
+	font-size: 0.8rem;
+}
+
+.board-with-form {
+	width: 80%;
+}
+
 .chat-message-board {
-	max-height: 500px;
+	height: 40vh;
 	overflow-y: scroll;
+	width: 100%;
+}
+
+.chat-sidebar {
+	height: 100%;
+	width: 20%;
 }
 
 .chat-message-board .message {
-	padding: 10px;
+	padding: 0 10px;
+	border: 1px solid black;
+	margin: 5px 0;
 }
 
 .chat-message-board .message .meta {
 	font-size: 15px;
-	margin-bottom: 7px;
+	margin-bottom: 5px;
 }
 
 .chat-message-board .message .meta .date {

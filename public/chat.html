@@ -8,33 +8,36 @@
 </head>
 <body>
   <div class="chat-container">
-    <header>
+    <header class="chat-header">
       <h1>Chat Room</h1>
-      <a href="index.html">Leave room</a>
     </header>
-    <main>
+    <main class="chat-board">
       <div class="chat-sidebar">
-        <h3>room: </h3>
-        <h2 id="room-name"></h2>
+        <div class="room">
+          <h2 id="room-name"></h2>
+          <a href="index.html">Leave room</a>
+        </div>
         <h3>users: </h3>
         <ul id="room-users"></ul>
       </div>
+      <div class="board-with-form">
+        <div class="chat-message-board"></div>
 
-      <div class="chat-message-board"></div>
+        <div class="chat-message-form">
+          <form id="chat-form">
+            <input 
+              id="msg"
+              required 
+              autocomplete="off" 
+              type="text" 
+              placeholder="enter message" 
+            />
+            <button type="submit">Send</button>
+          </form>
+        </div>
+      </div>
+      
     </main>
-
-    <div class="chat-message-form">
-      <form id="chat-form">
-        <input 
-          id="msg"
-          required 
-          autocomplete="off" 
-          type="text" 
-          placeholder="enter message" 
-        />
-        <button type="submit">Send</button>
-      </form>
-    </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.10.3/qs.min.js" 

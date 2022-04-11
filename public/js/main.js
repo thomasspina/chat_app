@@ -46,13 +46,10 @@ function outputMessage(message) {
     div.classList.add('message');
     
     div.innerHTML = `
-    <div class="message">
         <p class="meta">${message.username} <span>${message.time}</span> <span class="date">${message.date}</span></p>
         <p>
             ${message.text}
-        </p>
-    </div>
-    `;
+        </p>`;
 
     document.querySelector('.chat-message-board').appendChild(div);
 }

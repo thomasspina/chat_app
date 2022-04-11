@@ -8,32 +8,36 @@
 		<title>chat app</title>
 	</head>
 	<body>
-		<div>
-			<header>
+		<div class="home-page">
+			<header class="home-header">
 				<h1>Chat App</h1>
 			</header>
 			<main>
-				<form action="chat.html">
-					<div>
-						<label for="username">Username</label>
-						<input
-							type="text"
-							name="username"
-							id="username"
-							placeholder="Enter username..."
-							required
-						/>
-					</div>
-					<div>
-						<label for="room">Room</label>
-						<select name="room" id="room">
-							<option value="room1">room 1</option>
-							<option value="room2">room 2</option>
-							<option value="room3">room 3</option>
-						</select>
-					</div>
-					<button type="submit">Join Chat</button>
-				</form>
+				<div class="form-container">
+					<form action="chat.html" class="login">
+						<div class="fields">
+							<div class="username">
+								<label for="username">Username</label>
+								<input
+									type="text"
+									name="username"
+									id="username"
+									placeholder="Enter username..."
+									required
+								/>
+							</div>
+							<div class="room-select">
+								<label for="room">Room</label>
+								<select name="room" id="room">
+									<option value="room1">room 1</option>
+									<option value="room2">room 2</option>
+									<option value="room3">room 3</option>
+								</select>
+							</div>
+						</div>
+						<button type="submit" class="join">Join Chat</button>
+					</form>
+				</div>
 			</main>
 		</div>
 	</body>
