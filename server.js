@@ -2,62 +2,77 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
+const mysql = require('mysql');
+const dotenv = require('dotenv');
+
 const formatMessage = require('./utils/message.js');
 const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require('./utils/user.js');
+
+dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
-
-// Set static folder
-app.use(express.static(path.join(__dirname, 'public')));
-
-const botName = 'chat bot';
-
-// Run when a client connects
-io.on('connection', socket => {
-    socket.on('joinRoom', ({ username, room }) => {
-        const user = userJoin(socket.id, username, room); // TODO update user system (like what is socket.id and maybe use custome ids)
-
-        socket.join(user.room);
-
-        // Welcome current user
-        socket.emit('message', formatMessage(botName, `Welcome to the chat ${user.username}`)); 
-
-        // Broadcast when a user connects
-        socket.broadcast.to(user.room).emit('message', formatMessage(botName, `${user.username} has joined the chat`));
-
-        // Send users room info
-        io.to(user.room).emit('roomUsers', {
-            room: user.room,
-            users: getRoomUsers(user.room)
-        });
-    });
-
-    // Listen for chatMessage
-    socket.on('chatMessage', msg => {
-        const user = getCurrentUser(socket.id);
-
-        io.to(user.room).emit('message', formatMessage(user.username, msg));
-    });
-
-    // Broadcast when a user connects
-    socket.on('disconnect', () => {
-        const user = userLeave(socket.id);
-
-        if (user) {
-            io.to(user.room).emit('message', formatMessage(botName, `${user.username} has left the chat`));
-
-            // Send users room info
-            io.to(user.room).emit('roomUsers', {
-                room: user.room,
-                users: getRoomUsers(user.room)
-        });
-        }
-    });
-
+const connection = mysql.createConnection({
+    host: `${process.env.MYSQL_HOST}`,
+    port: 3306,
+    user: 'root',
+    password: `${process.env.MYSQL_ROOT_PASSWORD}`,
+    database: 'chat'
 });
 
-PORT = 3000 || process.env.PORT;
+app.use(express.static(path.join(__dirname, 'public')));
+connection.connect((err) => {
+    if (err) throw err;
+    console.log('MySQL connected.');
+});
 
+const botName = 'rob bot';
+
+io.on('connection', socket => {
+    socket.on('joinRoom', ({ username, room }) => {
+        userJoin(socket.id, username, room, connection)
+        .then(user => {
+            socket.join(user.room);
+
+            socket.emit('message', formatMessage(botName, `Welcome to the chat ${user.username}`)); // welcome
+
+            socket.broadcast.to(user.room).emit('message', formatMessage(botName, `${user.username} has joined the chat`));
+
+            sendRoomInfo(user);
+        })
+        .catch(err => setImmediate(() => { throw err; }));
+    });
+
+    // listen for chatMessage
+    socket.on('chatMessage', msg => {
+        getCurrentUser(socket.id, connection)
+        .then(user => { io.to(user.room).emit('message', formatMessage(user.username, msg)) })
+        .catch(err => setImmediate(() => { throw err; }));
+    });
+
+    // broadcast when a user connects
+    socket.on('disconnect', () => {
+        userLeave(socket.id, connection)
+        .then(user => {
+            io.to(user.room).emit('message', formatMessage(botName, `${user.username} has left the chat`));
+            
+            sendRoomInfo(user);
+        })
+        .catch(err => setImmediate(() => { throw err; }));
+    });
+});
+
+function sendRoomInfo(user) {
+    getRoomUsers(user.room, connection)
+    .then(users => {
+        io.to(user.room).emit('roomUsers', {
+            room: user.room,
+            users: users
+        });
+    })
+    .catch(err => setImmediate(() => { throw err; }));
+}
+
+PORT = process.env.PORT;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
