@@ -10,6 +10,8 @@ const { username, room } = Qs.parse(location.search, {
 
 const socket = io();
 
+var messageOffset = 0;
+
 socket.emit('joinRoom', { username, room });
 
 socket.on('roomUsers', ({ room, users }) => {
@@ -24,7 +26,7 @@ socket.on('message', message => {
 });
 
 socket.on('oldMessages', messages => {
-    for (let i = messages.length - 1; i > -1; i--) {
+    for (let i = 0; i < messages.length; i++) {
         const message = messages[i];
         const div = document.createElement('div');
         div.classList.add('message');
@@ -35,11 +37,21 @@ socket.on('oldMessages', messages => {
                 ${message.text}
             </p>`;
     
-        document.querySelector('.chat-message-board').prepend(div);
+        chatMessageBoard.prepend(div);
+    }
+    messageOffset += 30; // change when changing number of messages to load
+});
+
+// load more messages when scrolled to top
+chatMessageBoard.addEventListener('scroll', event => {
+    if (chatMessageBoard.scrollTop < 1) {
+        console.log('load new messages')
+        socket.emit('getOldMessages', messageOffset);
     }
 });
+
  
-chatForm.addEventListener('submit', (event) => {
+chatForm.addEventListener('submit', event => {
     event.preventDefault(); // prevents form from sending to a file
 
     const msg = event.target.elements.msg.value;
@@ -55,13 +67,10 @@ function outputMessage(message) {
     const div = document.createElement('div');
     div.classList.add('message');
     
-    div.innerHTML = `
-        <p class="meta">${message.username} <span>${message.time}</span> <span class="date">${message.date}</span></p>
-        <p>
-            ${message.text}
-        </p>`;
+    div.innerHTML = `<p class="meta">${message.username} <span>${message.time}</span> <span class="date">${message.date}</span></p>
+                    <p>${message.text}</p>`;
 
-    document.querySelector('.chat-message-board').append(div);
+    chatMessageBoard.append(div);
 }
 
 // add room name to DOM

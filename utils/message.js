@@ -25,7 +25,7 @@ function saveMessage(msg, room, db) {
 }
 
 
-function getMessages(room, lim, db) {
+function getMessages(room, offset, lim, db) {
     return new Promise((resolve, reject) => {
         const getMessagesQuery = `SELECT
                                     u.name AS username,
@@ -35,8 +35,8 @@ function getMessages(room, lim, db) {
                                 JOIN messages m USING(user_id)
                                 JOIN rooms r ON r.room_id = m.room_id
                                 WHERE r.name = '${room}'
-                                ORDER BY m.message_id
-                                LIMIT ${lim}`;
+                                ORDER BY m.message_id DESC
+                                LIMIT ${offset}, ${lim}`;
 
         db.query(getMessagesQuery, (err, res) => {
             if (err) { return reject(err); }

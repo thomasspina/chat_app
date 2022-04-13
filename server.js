@@ -28,13 +28,14 @@ connection.connect(err => {
 });
 
 const botName = 'rob bot';
+const nLoadMessage = 30;
 
 io.on('connection', socket => {
     socket.on('joinRoom', ({ username, room }) => {
         userJoin(socket.id, username, room, connection)
         .then(user => {
             socket.join(user.room);
-            postOldMessages(user, 30, socket); // post last 30 messages
+            postOldMessages(user, 0, nLoadMessage, socket); // post last n messages
 
             socket.emit('message', formatMessage(botName, `Welcome to the chat ${user.username}`)); // welcome
 
@@ -58,6 +59,13 @@ io.on('connection', socket => {
         .catch(err => setImmediate(() => { throw err; }));
     });
 
+    socket.on('getOldMessages', offset => {
+       getCurrentUser(socket.id, connection)
+       .then(user => {
+           postOldMessages(user, offset, nLoadMessage, socket);
+       })
+       .catch(err => setImmediate(() => { throw err; }));
+    });
 
     // broadcast when a user disconnects
     socket.on('disconnect', () => {
@@ -83,8 +91,8 @@ function sendRoomInfo(user) {
     .catch(err => setImmediate(() => { throw err; }));
 }
 
-function postOldMessages(user, lim, socket) {
-    getMessages(user.room, lim, connection)
+function postOldMessages(user, offset, lim, socket) {
+    getMessages(user.room, offset, lim, connection)
     .then(messages => {
         socket.emit('oldMessages', messages);
     })
