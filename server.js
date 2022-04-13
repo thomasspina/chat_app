@@ -34,7 +34,7 @@ io.on('connection', socket => {
         userJoin(socket.id, username, room, connection)
         .then(user => {
             socket.join(user.room);
-            postOldMessages(user, 30, socket);
+            postOldMessages(user, 30, socket); // post last 30 messages
 
             socket.emit('message', formatMessage(botName, `Welcome to the chat ${user.username}`)); // welcome
 

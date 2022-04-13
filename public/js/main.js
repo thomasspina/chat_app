@@ -24,8 +24,18 @@ socket.on('message', message => {
 });
 
 socket.on('oldMessages', messages => {
-    for (let i = 0; i < messages.length; i++) {
-        outputMessage(messages[i]);
+    for (let i = messages.length - 1; i > -1; i--) {
+        const message = messages[i];
+        const div = document.createElement('div');
+        div.classList.add('message');
+        
+        div.innerHTML = `
+            <p class="meta">${message.username} <span>${message.time}</span> <span class="date">${message.date}</span></p>
+            <p>
+                ${message.text}
+            </p>`;
+    
+        document.querySelector('.chat-message-board').prepend(div);
     }
 });
  
@@ -51,7 +61,7 @@ function outputMessage(message) {
             ${message.text}
         </p>`;
 
-    document.querySelector('.chat-message-board').appendChild(div);
+    document.querySelector('.chat-message-board').append(div);
 }
 
 // add room name to DOM

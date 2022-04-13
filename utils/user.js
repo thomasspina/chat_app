@@ -84,9 +84,9 @@ function getRoomUsers(room, db) {
                                     cu.socket_id AS socket,
                                     r.name AS room,
                                     u.name AS username
-                                FROM users u
-                                JOIN rooms r
-                                JOIN connected_users cu ON u.user_id = cu.user_id
+                                FROM connected_users cu
+                                JOIN rooms r ON r.room_id = cu.room_id
+                                JOIN users u ON u.user_id = cu.user_id
                                 WHERE r.name = '${room}'`;
         db.query(getUsersQuery, (err, res) => {
             if (err) { return reject(err); }
