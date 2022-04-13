@@ -3,40 +3,40 @@ const chatMessageBoard = document.querySelector('.chat-message-board')
 const roomName = document.getElementById('room-name');
 const userList = document.getElementById('room-users');
 
-// Get username and room from URL
+// get username and room from URL
 const { username, room } = Qs.parse(location.search, {
     ignoreQueryPrefix: true
 });
 
 const socket = io();
 
-// Join chatroom
 socket.emit('joinRoom', { username, room });
 
-// Get room and users
 socket.on('roomUsers', ({ room, users }) => {
     outputRoomName(room);
     outputUsers(users);
 });
 
-// Message from server
 socket.on('message', message => {
     outputMessage(message);
-
-    // Scroll down
+    
     chatMessageBoard.scrollTop = chatMessageBoard.scrollHeight;
 });
 
-// Message submit 
+socket.on('oldMessages', messages => {
+    for (let i = 0; i < messages.length; i++) {
+        outputMessage(messages[i]);
+    }
+});
+ 
 chatForm.addEventListener('submit', (event) => {
-    event.preventDefault(); // Prevents form from sending to a file
+    event.preventDefault(); // prevents form from sending to a file
 
     const msg = event.target.elements.msg.value;
 
-    // Emitting a message to the server
-    socket.emit('chatMessage', msg);
+    socket.emit('chatMessage', msg); // emitting a message to the server
 
-    // Clear input
+    // clear input
     event.target.elements.msg.value = "";
     event.target.elements.msg.focus();
 });
@@ -54,12 +54,12 @@ function outputMessage(message) {
     document.querySelector('.chat-message-board').appendChild(div);
 }
 
-// Add room name to DOM
+// add room name to DOM
 function outputRoomName(room) {
     roomName.innerText = room;
 }
 
-// Add users to DOM
+// add users to DOM
 function outputUsers(users) {
     userList.innerHTML = `${users.map(user => `<li>${user.username}</li>`).join('')}`;
 }

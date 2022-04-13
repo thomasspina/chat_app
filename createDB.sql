@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
     `room_id` int NOT NULL,
     `user_id` int NOT NULL,
     `message_text` varchar(1000) NOT NULL,
-    `date_time` date NOT NULL,
+    `date_time` DATETIME NOT NULL,
     PRIMARY KEY (`message_id`, `room_id`)
 );
 

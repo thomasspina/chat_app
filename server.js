@@ -5,7 +5,7 @@ const socketio = require('socket.io');
 const mysql = require('mysql');
 const dotenv = require('dotenv');
 
-const formatMessage = require('./utils/message.js');
+const { formatMessage, saveMessage, getMessages } = require('./utils/message.js');
 const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require('./utils/user.js');
 
 dotenv.config();
@@ -22,7 +22,7 @@ const connection = mysql.createConnection({
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
-connection.connect((err) => {
+connection.connect(err => {
     if (err) throw err;
     console.log('MySQL connected.');
 });
@@ -34,6 +34,7 @@ io.on('connection', socket => {
         userJoin(socket.id, username, room, connection)
         .then(user => {
             socket.join(user.room);
+            postOldMessages(user, 30, socket);
 
             socket.emit('message', formatMessage(botName, `Welcome to the chat ${user.username}`)); // welcome
 
@@ -47,11 +48,18 @@ io.on('connection', socket => {
     // listen for chatMessage
     socket.on('chatMessage', msg => {
         getCurrentUser(socket.id, connection)
-        .then(user => { io.to(user.room).emit('message', formatMessage(user.username, msg)) })
+        .then(user => { 
+            const message = formatMessage(user.username, msg);
+
+            io.to(user.room).emit('message', message);
+            
+            saveMessage(message, user.room, connection);
+        })
         .catch(err => setImmediate(() => { throw err; }));
     });
 
-    // broadcast when a user connects
+
+    // broadcast when a user disconnects
     socket.on('disconnect', () => {
         userLeave(socket.id, connection)
         .then(user => {
@@ -61,6 +69,7 @@ io.on('connection', socket => {
         })
         .catch(err => setImmediate(() => { throw err; }));
     });
+
 });
 
 function sendRoomInfo(user) {
@@ -70,6 +79,14 @@ function sendRoomInfo(user) {
             room: user.room,
             users: users
         });
+    })
+    .catch(err => setImmediate(() => { throw err; }));
+}
+
+function postOldMessages(user, lim, socket) {
+    getMessages(user.room, lim, connection)
+    .then(messages => {
+        socket.emit('oldMessages', messages);
     })
     .catch(err => setImmediate(() => { throw err; }));
 }
