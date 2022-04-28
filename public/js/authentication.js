@@ -9,10 +9,9 @@ require(['js/request.js'], () => {
     
         // TODO check form validity
         
-    
         // TODO check user
-        makeRequest('GET', `/user_exists`, username.value).then(res => {
-            console.log(res)
+        makeRequest('POST', `/authentication`, { username: username.value, password: password.value }).then(res => {
+            console.log(res);
         })
         .catch(err => {
             console.log(err);

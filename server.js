@@ -22,6 +22,7 @@ const connection = mysql.createConnection({
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json()); // needed to read JSON objects from requests
 
 connection.connect(err => {
     if (err) throw err;
@@ -31,10 +32,27 @@ connection.connect(err => {
 
 
 /* to authenticate users */
-app.get('/user_exists', (req, res) => {
-    //getDBUser(req.params, connection);
-    console.log(req.params);
-    res.send("yes");
+app.post('/authentication', (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+
+
+    // check if user exists
+    getDBUser(username, connection)
+        .then(resolv => {
+            if (resolv.length == 0) {
+                res.send('NO_USER');
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
+
+
+    
+
+
+
 });
 
 
