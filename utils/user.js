@@ -1,4 +1,5 @@
 function userJoin(socketId, username, room, db) {
+
     const connectUser = (query, resolve, param) => {
         db.query(query, (err, res) => { 
             if (err) { return reject(err); };
@@ -24,7 +25,7 @@ function userJoin(socketId, username, room, db) {
         db.query(fetchUserQuery, (err, res) => {
             if (err) { return reject(err); };
             
-            if (res.length === 0) { // if no user insert new user
+            if (res.length === 0) { // check if user exists. if no user, insert new user
                 db.query(`INSERT INTO users VALUES (DEFAULT, '${username}')`, (err, res) => {
                     if (err) { return reject(err); };
                     console.log(`created user ${username}.`);
@@ -95,9 +96,20 @@ function getRoomUsers(room, db) {
     });
 }
 
+function getDBUser(username, db) {
+    return new Promise((resolve, reject) => {
+        const fetchUserQuery = `SELECT * FROM users WHERE name = '${username}'`;
+        db.query(fetchUserQuery, (err, res) => {
+            if (err) { return reject(err); }
+            resolve(res);
+        });
+    });
+}
+
 module.exports = {
     userJoin, 
     getCurrentUser,
     userLeave,
-    getRoomUsers
+    getRoomUsers,
+    getDBUser
 };

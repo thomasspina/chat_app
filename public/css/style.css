@@ -31,6 +31,11 @@ body {
 	justify-content: space-between;
 }
 
+.credentials {
+	display: flex;
+	flex-direction: column;
+}
+
 /* chat page */
 
 .chat-header {

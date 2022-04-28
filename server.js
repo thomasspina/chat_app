@@ -6,7 +6,7 @@ const mysql = require('mysql');
 const dotenv = require('dotenv');
 
 const { formatMessage, saveMessage, getMessages } = require('./utils/message.js');
-const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require('./utils/user.js');
+const { userJoin, getCurrentUser, userLeave, getRoomUsers, getDBUser } = require('./utils/user.js');
 
 dotenv.config();
 
@@ -22,11 +22,25 @@ const connection = mysql.createConnection({
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
+
 connection.connect(err => {
     if (err) throw err;
     console.log('MySQL connected.');
 });
 
+
+
+/* to authenticate users */
+app.get('/user_exists', (req, res) => {
+    //getDBUser(req.params, connection);
+    console.log(req.params);
+    res.send("yes");
+});
+
+
+
+
+/* chat message code */
 const botName = 'rob bot';
 const nLoadMessage = 30;
 
