@@ -1,4 +1,4 @@
-function makeRequest(method, url) {
+function makeRequest(method, url, data = null) {
     return new Promise((resolve, reject) => {
         let xhr = new XMLHttpRequest();
         xhr.open(method, url);
@@ -21,8 +21,6 @@ function makeRequest(method, url) {
             });
         };
 
-        xhr.send();
+        xhr.send(data);
     });
 }
-
-module.exports = { makeRequest };
