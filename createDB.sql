@@ -22,11 +22,9 @@ INSERT INTO `rooms` VALUES (DEFAULT, 'room3');
 CREATE TABLE IF NOT EXISTS `users` (
     `user_id` int NOT NULL AUTO_INCREMENT,
     `name` varchar(255) NOT NULL UNIQUE,
-    `salt` varchar(255) DEFAULT NULL,
     `hash` varchar(255) DEFAULT NULL, 
     PRIMARY KEY (`user_id`)
 );
-
 
 CREATE TABLE IF NOT EXISTS `connected_users` (
     `user_id` int NOT NULL,

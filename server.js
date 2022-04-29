@@ -4,9 +4,15 @@ const express = require('express');
 const socketio = require('socket.io');
 const mysql = require('mysql');
 const dotenv = require('dotenv');
+const bcrypt = require('bcrypt');
 
 const { formatMessage, saveMessage, getMessages } = require('./utils/message.js');
-const { userJoin, getCurrentUser, userLeave, getRoomUsers, getDBUser } = require('./utils/user.js');
+const { userJoin, 
+        getCurrentUser, 
+        userLeave, 
+        getRoomUsers, 
+        getUser, 
+        addUser } = require('./utils/user.js');
 
 dotenv.config();
 
@@ -31,28 +37,33 @@ connection.connect(err => {
 
 
 
-/* to authenticate users */
+// post to authenticate user
 app.post('/authentication', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-
     // check if user exists
-    getDBUser(username, connection)
+    getUser(username, connection)
         .then(resolv => {
+            //addUser(username, password, connection);
             if (resolv.length == 0) {
                 res.send('NO_USER');
+                return;
             }
+
+            const user = resolv[0];
+            // check password match
+            bcrypt.compare(password, user.hash, (err, result) => {
+                if (result) {
+                    res.send('CREDENTIALS_VALID');
+                } else {
+                    res.send('WRONG_PASSWORD');
+                }
+            });
         })
         .catch(err => {
             console.log(err);
         });
-
-
-    
-
-
-
 });
 
 

@@ -1,3 +1,7 @@
+const bcrypt = require('bcrypt');
+
+const SALT_ROUNDS = 10;
+
 function userJoin(socketId, username, room, db) {
 
     const connectUser = (query, resolve, param) => {
@@ -96,7 +100,7 @@ function getRoomUsers(room, db) {
     });
 }
 
-function getDBUser(username, db) {
+function getUser(username, db) {
     return new Promise((resolve, reject) => {
         const fetchUserQuery = `SELECT * FROM users WHERE name = '${username}'`;
         db.query(fetchUserQuery, (err, res) => {
@@ -106,10 +110,23 @@ function getDBUser(username, db) {
     });
 }
 
+function addUser(username, password, db) {
+    // the hash is: <$version$cost$> <128-bit (22 char) salt used to hash> <184-bit (31 char) salted and hashed password> 
+    bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
+
+        const insertUserQuery = `INSERT INTO users VALUES (DEFAULT, '${username}', '${hash}')`;
+        db.query(insertUserQuery, (err, res) => {
+            if (err) { throw err; }
+            console.log(`Inserted user "${username}" with password "${hash}"`);
+        });
+    });
+}
+
 module.exports = {
     userJoin, 
     getCurrentUser,
     userLeave,
     getRoomUsers,
-    getDBUser
+    getUser,
+    addUser
 };
